@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flores Amarillas</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0b101e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .mensaje {
+            position: absolute;
+            top: 15%;
+            color: #ffeb3b;
+            font-size: 2.5rem;
+            text-align: center;
+            z-index: 2;
+            opacity: 0;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+            animation: aparecer 3s forwards;
+            animation-delay: 5s;
+            pointer-events: none;
+        }
+        @keyframes aparecer {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mensaje">Para ti 💛</div>
+    <canvas id="lienzo"></canvas>
+
+    <script>
+        const canvas = document.getElementById('lienzo');
+        const ctx = canvas.getContext('2d');
+        
+        function ajustarTamaño() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', ajustarTamaño);
+        ajustarTamaño();
+
+        const flores = [];
+        const numeroFlores = 9;
+        const coloresAmarillos = ['#FFD700', '#FFEA00', '#FDD835', '#FBC02D'];
+
+        class Flor {
+            constructor(x, y, alturaDeseada, retraso) {
+                this.x = x;
+                this.y = y;
+                this.alturaDeseada = alturaDeseada;
+                this.alturaActual = 0;
+                this.retraso = retraso;
+                this.floracion = 0;
+                this.color = coloresAmarillos[Math.floor(Math.random() * coloresAmarillos.length)];
+                this.grosorTallo = 4 + Math.random() * 3;
+                this.cantidadPetalos = 6 + Math.floor(Math.random() * 6);
+            }
+
+            dibujar() {
+                if (this.retraso > 0) {
+                    this.retraso--;
+                    return;
+                }
+
+                if (this.alturaActual < this.alturaDeseada) {
+                    this.alturaActual += 4;
+                } else if (this.floracion < 1) {
+                    this.floracion += 0.02; 
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                const curvaX = this.x + Math.sin(this.alturaActual * 0.02) * 30;
+                const finY = this.y - this.alturaActual;
+                ctx.quadraticCurveTo(curvaX, this.y - this.alturaActual / 2, this.x, finY);
+                ctx.strokeStyle = '#2e7d32';
+                ctx.lineWidth = this.grosorTallo;
+                ctx.lineCap = "round";
+                ctx.stroke();
+
+                if (this.alturaActual >= this.alturaDeseada) {
+                    ctx.save();
+                    ctx.translate(this.x, finY);
+                    ctx.scale(this.floracion, this.floracion);
+                    
+                    for (let i = 0; i < this.cantidadPetalos; i++) {
+                        ctx.rotate((Math.PI * 2) / this.cantidadPetalos);
+                        ctx.beginPath();
+                        ctx.ellipse(0, 18, 12, 30, 0, 0, Math.PI * 2);
+                        ctx.fillStyle = this.color;
+                        ctx.fill();
+                        ctx.strokeStyle = '#F57F17';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                    
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 12, 0, Math.PI * 2);
+                    ctx.fillStyle = '#5D4037';
+                    ctx.fill();
+                    
+                    ctx.restore();
+                }
+            }
+        }
+
+        function inicializarFlores() {
+            flores.length = 0;
+            const baseRamoY = canvas.height + 50;
+            const centroX = canvas.width / 2;
+
+            for (let i = 0; i < numeroFlores; i++) {
+                const offsetX = (Math.random() - 0.5) * (canvas.width > 500 ? 300 : 200);
+                const alturaMax = canvas.height * 0.4 + Math.random() * canvas.height * 0.35;
+                const retrasoInicio = Math.random() * 150;
+                
+                flores.push(new Flor(centroX + offsetX, baseRamoY, alturaMax, retrasoInicio));
+            }
+        }
+
+        inicializarFlores();
+
+        function animar() {
+            ctx.fillStyle = 'rgba(11, 16, 30, 0.2)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            flores.forEach(flor => flor.dibujar());
+            
+            requestAnimationFrame(animar);
+        }
+
+        ctx.fillStyle = '#0b101e';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        animar();
+
+    </script>
+</body>
+</html>
