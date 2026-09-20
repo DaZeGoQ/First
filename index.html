@@ -25,7 +25,7 @@
         }
         .mensaje {
             position: absolute;
-            top: 10%;
+            top: 5%;
             color: #ffeb3b;
             font-size: 2.5rem;
             text-align: center;
@@ -33,7 +33,7 @@
             opacity: 0;
             text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
             animation: aparecer 2s forwards;
-            animation-delay: 6s;
+            animation-delay: 4s;
             pointer-events: none;
         }
         @keyframes aparecer {
@@ -43,7 +43,7 @@
 </head>
 <body>
 
-    <div class="mensaje">Para ti 💛</div>
+    <div class="mensaje">Para ti Principessa</div>
     <canvas id="lienzo"></canvas>
 
     <script>
@@ -57,31 +57,25 @@
         window.addEventListener('resize', ajustarTamaño);
         ajustarTamaño();
 
-        function obtenerPuntoCorazon(t, escala) {
-            const x = 16 * Math.pow(Math.sin(t), 3);
-            const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-            return { x: x * escala, y: y * escala };
-        }
-
         const flores = [];
-        const coloresAmarillos = ['#FFD700', '#FFEA00', '#FDD835', '#FBC02D'];
+        const coloresAmarillos = ['#FFD700', '#FFEA00', '#FDD835', '#FBC02D', '#FFC107', '#FFB300'];
 
         class Flor {
-            constructor(targetX, targetY, delay) {
-                this.tx = targetX;
-                this.ty = targetY;
-                this.sx = canvas.width / 2 + (Math.random() * 20 - 10);
+            constructor(tx, ty, delay) {
+                this.tx = tx;
+                this.ty = ty;
+                this.sx = canvas.width / 2;
                 this.sy = canvas.height + 50;
-                
-                this.cx = this.sx + (this.tx - this.sx) * (Math.random() * 0.5 + 0.5);
+                this.cx = this.sx + (this.tx - this.sx) * 0.5 + (Math.random() * 150 - 75);
                 this.cy = this.sy - (this.sy - this.ty) * 0.3;
-                
                 this.delay = delay;
-                this.progresoTallo = 0;
+                this.progreso = 0;
                 this.floracion = 0;
-                this.velocidadTallo = 0.015 + Math.random() * 0.01;
+                this.velocidad = 0.025 + Math.random() * 0.02;
                 this.color = coloresAmarillos[Math.floor(Math.random() * coloresAmarillos.length)];
-                this.cantidadPetalos = 6 + Math.floor(Math.random() * 5);
+                this.radio = 7 + Math.random() * 5;
+                this.petalos = 5 + Math.floor(Math.random() * 4);
+                this.angBase = Math.random() * Math.PI;
             }
 
             dibujar() {
@@ -90,38 +84,33 @@
                     return;
                 }
 
-                if (this.progresoTallo < 1) {
-                    this.progresoTallo += this.velocidadTallo;
+                if (this.progreso < 1) {
+                    this.progreso += this.velocidad;
                 } else if (this.floracion < 1) {
-                    this.floracion += 0.05; 
+                    this.floracion += 0.08;
                 }
 
-                let p = Math.min(this.progresoTallo, 1);
-                
-                let cpX_new = this.sx + (this.cx - this.sx) * p;
-                let cpY_new = this.sy + (this.cy - this.sy) * p;
-                let currentX = Math.pow(1-p, 2)*this.sx + 2*(1-p)*p*this.cx + Math.pow(p, 2)*this.tx;
-                let currentY = Math.pow(1-p, 2)*this.sy + 2*(1-p)*p*this.cy + Math.pow(p, 2)*this.ty;
+                let p = Math.min(this.progreso, 1);
+                let x = Math.pow(1-p, 2)*this.sx + 2*(1-p)*p*this.cx + Math.pow(p, 2)*this.tx;
+                let y = Math.pow(1-p, 2)*this.sy + 2*(1-p)*p*this.cy + Math.pow(p, 2)*this.ty;
 
                 ctx.beginPath();
                 ctx.moveTo(this.sx, this.sy);
-                ctx.quadraticCurveTo(cpX_new, cpY_new, currentX, currentY);
-                ctx.strokeStyle = '#2e7d32';
-                ctx.lineWidth = 2.5;
-                ctx.lineCap = "round";
+                ctx.quadraticCurveTo(this.cx, this.cy, x, y);
+                ctx.strokeStyle = '#1b5e20';
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
 
-                if (this.progresoTallo >= 1) {
+                if (this.progreso >= 1) {
                     ctx.save();
                     ctx.translate(this.tx, this.ty);
                     ctx.scale(this.floracion, this.floracion);
+                    ctx.rotate(this.angBase);
                     
-                    for (let i = 0; i < this.cantidadPetalos; i++) {
-                        ctx.rotate((Math.PI * 2) / this.cantidadPetalos);
+                    for (let i = 0; i < this.petalos; i++) {
+                        ctx.rotate((Math.PI * 2) / this.petalos);
                         ctx.beginPath();
-                        ctx.moveTo(0, 0);
-                        ctx.quadraticCurveTo(8, -15, 0, -25);
-                        ctx.quadraticCurveTo(-8, -15, 0, 0);
+                        ctx.ellipse(0, this.radio, this.radio * 0.5, this.radio * 1.5, 0, 0, Math.PI * 2);
                         ctx.fillStyle = this.color;
                         ctx.fill();
                         ctx.strokeStyle = '#F57F17';
@@ -130,8 +119,8 @@
                     }
                     
                     ctx.beginPath();
-                    ctx.arc(0, 0, 4, 0, Math.PI * 2);
-                    ctx.fillStyle = '#5D4037';
+                    ctx.arc(0, 0, this.radio * 0.4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#4e342e';
                     ctx.fill();
                     
                     ctx.restore();
@@ -139,36 +128,30 @@
             }
         }
 
-        function inicializarFlores() {
+        function crearRamo() {
             flores.length = 0;
-            const escala = Math.min(canvas.width, canvas.height) * 0.015;
-            const centroX = canvas.width / 2;
-            const centroY = canvas.height * 0.45;
-            let index = 0;
+            const escala = Math.min(canvas.width, canvas.height) * 0.016;
+            const cX = canvas.width / 2;
+            const cY = canvas.height * 0.45;
 
-            for (let i = 0; i < 45; i++) {
-                let t = (Math.PI * 2 * i) / 45;
-                let p = obtenerPuntoCorazon(t, escala);
-                flores.push(new Flor(centroX + p.x, centroY + p.y, index * 3));
-                index++;
+            for (let i = 0; i < 200; i++) {
+                let t = Math.random() * Math.PI * 2;
+                let r = Math.sqrt(Math.random());
+                
+                let hx = 16 * Math.pow(Math.sin(t), 3);
+                let hy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+                
+                let tx = cX + hx * escala * r;
+                let ty = cY + hy * escala * r;
+                
+                let delay = Math.random() * 60; 
+                flores.push(new Flor(tx, ty, delay));
             }
-
-            for (let i = 0; i < 30; i++) {
-                let t = (Math.PI * 2 * i) / 30;
-                let p = obtenerPuntoCorazon(t, escala * 0.7);
-                flores.push(new Flor(centroX + p.x, centroY + p.y, index * 3));
-                index++;
-            }
-
-            for (let i = 0; i < 15; i++) {
-                let t = (Math.PI * 2 * i) / 15;
-                let p = obtenerPuntoCorazon(t, escala * 0.4);
-                flores.push(new Flor(centroX + p.x, centroY + p.y, index * 3));
-                index++;
-            }
+            
+            flores.sort((a, b) => a.ty - b.ty);
         }
 
-        inicializarFlores();
+        crearRamo();
 
         function animar() {
             ctx.fillStyle = '#0b101e';
