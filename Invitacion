@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una invitación especial para ti 💖</title>
+    <!-- Fuentes de Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            color: #d81b60;
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #4a4a4a;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            min-height: 60px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            outline: none;
+        }
+
+        .btn-yes {
+            background-color: #e91e63;
+            color: white;
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
+            z-index: 3;
+        }
+
+        .btn-yes:active {
+            transform: scale(0.95);
+        }
+
+        .btn-no {
+            background-color: #e0e0e0;
+            color: #666;
+            position: absolute;
+            transition: all 0.15s ease-out;
+            z-index: 4;
+        }
+
+        /* Corazones flotantes de fondo */
+        .heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 20px;
+            animation: floatUp 4s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tarjeta Principal -->
+    <div class="card">
+        <h1>Principessa</h1>
+        <p>El domingo 4 de octubre te veo en:</p>
+
+        <!-- ESPACIO PARA GOOGLE MAPS -->
+        <!-- Cambia el link del 'src' dentro del iframe por el enlace embed de tu ubicación de Google Maps -->
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3701.8596!2d-102.2925!3d21.8853!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjHCsDUzJzA3LjEiTiAxMDLCsDE3JzMzLjAiVw!5e0!3m2!1ses!2smx!4v1600000000000!5m2!1ses!2smx" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+
+        <div class="buttons-container">
+            <button class="btn btn-yes" id="btnYes">¡Sí, acepto! 💕</button>
+            <button class="btn btn-no" id="btnNo">Lo pensaré</button>
+        </div>
+    </div>
+
+    <script>
+        const btnNo = document.getElementById('btnNo');
+        const btnYes = document.getElementById('btnYes');
+
+        // Función para mover el botón "Lo pensaré" aleatoriamente cuando intente tocarlo
+        function moverBoton() {
+            // Límites de movimiento dentro de la tarjeta
+            const x = Math.random() * 160 - 80; // Rango de movimiento horizontal
+            const y = Math.random() * 100 - 50; // Rango de movimiento vertical
+            btnNo.style.transform = `translate(${x}px, ${y}px)`;
+        }
+
+        // Eventos para celular (touch) y computadora (mouse)
+        btnNo.addEventListener('mouseover', moverBoton);
+        btnNo.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Evita que se presione en celulares
+            moverBoton();
+        });
+        btnNo.addEventListener('click', moverBoton);
+
+        // Acción al aceptar (Abre los mensajes de texto para notificarte)
+        btnYes.addEventListener('click', () => {
+           
+            const tuNumero = "+524435807813"; 
+            const mensaje = encodeURIComponent("¡Hola! Sí acepto la cita para el domingo 4 de octubre 🥰💕");
+            
+            // Abre la aplicación de SMS con el mensaje listo para ti
+            window.location.href = `sms:${tuNumero}?body=${mensaje}`;
+        });
+
+        // Generar corazones flotantes dinámicos
+        function crearCorazon() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+
+        setInterval(crearCorazon, 400);
+    </script>
+</body>
+</html>
